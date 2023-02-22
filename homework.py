@@ -28,8 +28,7 @@ logging.basicConfig(
 
 
 def check_tokens():
-    """Проверяет доступность переменных окружения,
-    которые необходимы для работы программы."""
+    """Проверяет доступность переменных окружения."""
     item_list = [PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]
     return all(item_list)
 
