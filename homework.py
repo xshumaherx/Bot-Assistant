@@ -70,9 +70,16 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о конкретной домашней работе статус этой работы"""
-    homework_status = homework[0]['status']
-    homework_name = homework[0]['homework_name']
+    """Извлекает из информации о конкретной
+        домашней работе статус этой работы"""
+    if 'status' not in homework:
+        raise KeyError('В ответе API нет ключа "status"')
+    else:
+        homework_status = homework['status']
+    if 'homework_name' not in homework:
+        raise KeyError('В ответе API нет ключа "homework_name"')
+    else:
+        homework_name = homework['homework_name']
     verdict = HOMEWORK_VERDICTS.get(homework_status)
     if homework_status not in HOMEWORK_VERDICTS:
         message = 'Проект еще не открыли.'
@@ -99,13 +106,13 @@ def main():
     """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     timestamp = int(time.time())
-    # 1676149200
     while True:
         try:
             if check_tokens():
-                response = get_api_answer(1676149200)
+                response = get_api_answer(timestamp)
                 homeworks = check_response(response)
-                send_message(bot, parse_status(homeworks))
+                if homeworks:
+                    send_message(bot, parse_status(homeworks[0]))
             else:
                 logging.critical(
                     'Отсутствует обязательная переменная окружения\n')
