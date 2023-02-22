@@ -51,7 +51,7 @@ def get_api_answer(timestamp):
 
 
 def check_response(response):
-    """Проверяет ответ API на соответствие документации"""
+    """Проверяет ответ API на соответствие документации."""
     if type(response) is not dict:
         message = 'Данные приходят не в виде словаря'
         logging.error(message)
@@ -69,8 +69,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о конкретной
-        домашней работе статус этой работы"""
+    """Извлекает из информации статус этой работы."""
     if 'status' not in homework:
         raise KeyError('В ответе API нет ключа "status"')
     else:
@@ -89,8 +88,7 @@ def parse_status(homework):
 
 
 def send_message(bot, message):
-    """Отправляет сообщение в Telegram чат,
-    определяемый переменной окружения TELEGRAM_CHAT_ID."""
+    """Отправляет сообщение в Telegram чат."""
     try:
         bot.send_message(
             TELEGRAM_CHAT_ID,
