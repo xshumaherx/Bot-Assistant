@@ -17,4 +17,4 @@ pip install -r requirements.txt
 python homework.py
 ```
 ### Автор
-@xshumaherx
+[Александр Вдовенко](https://github.com/xshumaherx)
