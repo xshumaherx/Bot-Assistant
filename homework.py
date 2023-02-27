@@ -43,16 +43,16 @@ def get_api_answer(timestamp):
             headers=HEADERS,
             params={'from_date': timestamp},
         )
-        if response.status_code != HTTPStatus.OK:
-            message = 'Ошибка запроса к API'
-            logging.error(message)
-            raise Exception(message)
-        try:
-            return response.json()
-        except json.decoder.JSONDecodeError:
-            logging.error("N'est pas JSON")
     except Exception as error:
         logging.error(f'Ошибка при запросе к API: {error}')
+    if response.status_code != HTTPStatus.OK:
+        message = 'Ошибка запроса к API'
+        logging.error(message)
+        raise Exception(message)
+    try:
+        return response.json()
+    except json.decoder.JSONDecodeError:
+        logging.error("Это не JSON")
 
 
 def check_response(response):
