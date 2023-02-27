@@ -1,6 +1,8 @@
+import json
 import logging
 import os
 import time
+from http import HTTPStatus
 
 import requests
 import telegram
@@ -41,13 +43,16 @@ def get_api_answer(timestamp):
             headers=HEADERS,
             params={'from_date': timestamp},
         )
-        if response.status_code != 200:
+        if response.status_code != HTTPStatus.OK:
             message = 'Ошибка запроса к API'
             logging.error(message)
             raise Exception(message)
-        return response.json()
-    except requests.RequestException('Неполадки') as error:
-        logging.error(error)
+        try:
+            return response.json()
+        except json.decoder.JSONDecodeError:
+            logging.error("N'est pas JSON")
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к API: {error}')
 
 
 def check_response(response):
@@ -61,7 +66,7 @@ def check_response(response):
                    'данные приходят не в виде списка')
         logging.error(message)
         raise TypeError(message)
-    if str('homeworks') not in response:
+    if 'homeworks' not in response:
         message = 'В ответе API домашки нет ключа'
         logging.error(message)
         raise KeyError(message)
@@ -83,8 +88,7 @@ def parse_status(homework):
         message = 'Проект еще не открыли.'
         logging.error(message)
         raise KeyError(message)
-    else:
-        return f'Изменился статус проверки работы "{homework_name}". {verdict}'
+    return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
 
 def send_message(bot, message):
