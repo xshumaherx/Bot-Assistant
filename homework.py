@@ -24,6 +24,8 @@ HOMEWORK_VERDICTS = {
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
 
+logger = logging.getLogger(__name__)
+
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     level=logging.INFO)
@@ -43,16 +45,26 @@ def get_api_answer(timestamp):
             headers=HEADERS,
             params={'from_date': timestamp},
         )
+    except requests.exceptions.Timeout as errTime:
+        message = 'Время запроса истекла'
+        logger.error(message, errTime)
+        raise TimeoutError(message)
+    except requests.exceptions.ConnectionError as errCon:
+        message = 'Ошибка подключения'
+        logger.error(message, errCon)
+        raise ConnectionError(message)
     except Exception as error:
-        logging.error(f'Ошибка при запросе к API: {error}')
+        message = 'Ошибка'
+        logger.error(message, error)
+        raise SystemExit(error)
     if response.status_code != HTTPStatus.OK:
         message = 'Ошибка запроса к API'
-        logging.error(message)
+        logger.error(message)
         raise Exception(message)
     try:
         return response.json()
     except json.decoder.JSONDecodeError:
-        logging.error("Это не JSON")
+        logger.error("Это не JSON")
 
 
 def check_response(response):
@@ -121,6 +133,7 @@ def main():
         except Exception as error:
             logging.error(f'Сбой в работе программы: {error}')
             break
+        timestamp = int(time.time())
         time.sleep(RETRY_PERIOD)
 
 
