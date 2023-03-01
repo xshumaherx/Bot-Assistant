@@ -71,16 +71,16 @@ def check_response(response):
     """Проверяет ответ API на соответствие документации."""
     if type(response) is not dict:
         message = 'Данные приходят не в виде словаря'
-        logging.error(message)
+        logger.error(message)
         raise TypeError(message)
     if type(response.get('homeworks')) is not list:
         message = ('В ответе API домашки под ключом `homeworks`\n'
                    'данные приходят не в виде списка')
-        logging.error(message)
+        logger.error(message)
         raise TypeError(message)
     if 'homeworks' not in response:
         message = 'В ответе API домашки нет ключа'
-        logging.error(message)
+        logger.error(message)
         raise KeyError(message)
     return response.get('homeworks')
 
@@ -98,7 +98,7 @@ def parse_status(homework):
     verdict = HOMEWORK_VERDICTS.get(homework_status)
     if homework_status not in HOMEWORK_VERDICTS:
         message = 'Проект еще не открыли.'
-        logging.error(message)
+        logger.error(message)
         raise KeyError(message)
     return f'Изменился статус проверки работы "{homework_name}". {verdict}'
 
@@ -110,9 +110,9 @@ def send_message(bot, message):
             TELEGRAM_CHAT_ID,
             message,
         )
-        logging.debug(f'Бот отправил сообщение {message}')
+        logger.debug(f'Бот отправил сообщение {message}')
     except Exception as error:
-        logging.error(f'Ошибка при отправки сообщения в Telegram: {error}')
+        logger.error(f'Ошибка при отправки сообщения в Telegram: {error}')
 
 
 def main():
@@ -127,11 +127,11 @@ def main():
                 if homeworks:
                     send_message(bot, parse_status(homeworks[0]))
             else:
-                logging.critical(
+                logger.critical(
                     'Отсутствует обязательная переменная окружения\n')
                 break
         except Exception as error:
-            logging.error(f'Сбой в работе программы: {error}')
+            logger.error(f'Сбой в работе программы: {error}')
             break
         timestamp = int(time.time())
         time.sleep(RETRY_PERIOD)
